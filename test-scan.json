@@ -1,0 +1,16 @@
+{
+  "scanId": "test-001",
+  "commitSha": "abc123",
+  "branch": "main",
+  "author": "Fredrick",
+  "vulnerabilities": [
+    {
+      "source": "snyk",
+      "type": "dependency",
+      "severity": "high",
+      "title": "Test vulnerability",
+      "package": "test-package@1.0.0",
+      "fixAvailable": true
+    }
+  ]
+}

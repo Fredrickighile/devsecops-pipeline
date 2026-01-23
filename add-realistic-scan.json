@@ -1,0 +1,108 @@
+{
+  "scanId": "scan-2024-prod",
+  "commitSha": "a7f8c9d2",
+  "branch": "main",
+  "author": "Fredrick",
+  "vulnerabilities": [
+    {
+      "source": "snyk",
+      "type": "dependency",
+      "severity": "critical",
+      "title": "Remote Code Execution in lodash",
+      "description": "Prototype pollution vulnerability allows attackers to execute arbitrary code",
+      "package": "lodash@4.17.15",
+      "fixAvailable": true,
+      "cvss": 9.8
+    },
+    {
+      "source": "gitleaks",
+      "type": "secret",
+      "severity": "critical",
+      "title": "AWS Access Key Exposed in Config File",
+      "description": "Hardcoded AWS credentials found in database.js",
+      "package": "vulnerable-app/src/config/database.js",
+      "fixAvailable": false,
+      "cvss": 9.1
+    },
+    {
+      "source": "snyk",
+      "type": "dependency",
+      "severity": "high",
+      "title": "SQL Injection in mysql2",
+      "description": "Improper input validation allows SQL injection attacks",
+      "package": "mysql2@2.3.0",
+      "fixAvailable": true,
+      "cvss": 8.6
+    },
+    {
+      "source": "trivy",
+      "type": "container",
+      "severity": "high",
+      "title": "Outdated Node.js Base Image",
+      "description": "Base image contains multiple security vulnerabilities",
+      "package": "node:14-alpine",
+      "fixAvailable": true,
+      "cvss": 7.5
+    },
+    {
+      "source": "snyk",
+      "type": "dependency",
+      "severity": "high",
+      "title": "JWT Signature Verification Bypass",
+      "description": "jsonwebtoken allows signature verification bypass",
+      "package": "jsonwebtoken@8.5.1",
+      "fixAvailable": true,
+      "cvss": 7.4
+    },
+    {
+      "source": "sonarcloud",
+      "type": "code-quality",
+      "severity": "medium",
+      "title": "Missing Input Validation",
+      "description": "User input not sanitized in products route",
+      "package": "vulnerable-app/src/routes/products.js",
+      "fixAvailable": false,
+      "cvss": 5.3
+    },
+    {
+      "source": "snyk",
+      "type": "dependency",
+      "severity": "medium",
+      "title": "Cross-Site Scripting (XSS) in express",
+      "description": "Reflected XSS vulnerability in error handling",
+      "package": "express@4.17.1",
+      "fixAvailable": true,
+      "cvss": 6.1
+    },
+    {
+      "source": "trivy",
+      "type": "container",
+      "severity": "medium",
+      "title": "Vulnerable OpenSSL Library",
+      "description": "Container includes outdated OpenSSL with known CVEs",
+      "package": "openssl@1.1.1k",
+      "fixAvailable": true,
+      "cvss": 5.9
+    },
+    {
+      "source": "sonarcloud",
+      "type": "code-quality",
+      "severity": "low",
+      "title": "Weak Password Hashing",
+      "description": "bcrypt rounds set too low (should be 10+)",
+      "package": "vulnerable-app/src/routes/auth.js",
+      "fixAvailable": false,
+      "cvss": 3.7
+    },
+    {
+      "source": "snyk",
+      "type": "dependency",
+      "severity": "low",
+      "title": "Deprecated Package Warning",
+      "description": "Package no longer maintained, potential security risk",
+      "package": "request@2.88.0",
+      "fixAvailable": true,
+      "cvss": 2.1
+    }
+  ]
+}
