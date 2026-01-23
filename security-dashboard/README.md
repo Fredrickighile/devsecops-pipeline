@@ -239,10 +239,10 @@ pip install -r requirements.txt --break-system-packages
 Create a `.env` file in the `security-api` directory:
 
 ```env
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/devsecops
-PORT=5000
-NODE_ENV=development
-ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+MONGODB_URI=
+PORT=****
+NODE_ENV=
+ALLOWED_ORIGINS=
 ```
 
 ### Step 6: Start Services
