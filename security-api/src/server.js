@@ -1,41 +1,48 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-require('dotenv').config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+require("dotenv").config();
 
-const scanRoutes = require('./routes/scans');
-const errorHandler = require('./middleware/errorHandler');
+const scanRoutes = require("./routes/scans");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  }),
+);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100
+  max: 100,
 });
-app.use('/api/', limiter);
+app.use("/api/", limiter);
 
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("Connected to MongoDB"))
   .catch((error) => {
-    console.error('MongoDB error:', error.message);
+    console.error("MongoDB error:", error.message);
     process.exit(1);
   });
 
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.json({
-    status: 'OK',
-    database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+    status: "OK",
+    database:
+      mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
   });
 });
 
-app.use('/api/scans', scanRoutes);
+app.use("/api/scans", scanRoutes);
 
 app.use(errorHandler);
 
