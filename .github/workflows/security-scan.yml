@@ -8,32 +8,79 @@ on:
 
 jobs:
   security-scan:
-    name: Run Security Scans
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      
-      - name: Install dependencies
-        working-directory: ./vulnerable-app
-        run: npm ci
-      
-      - name: Run Snyk Security Scan
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-          command: test
-      
-      - name: Security Scan Summary
-        run: |
-          echo "Security scan completed"
-          echo "Check the Actions tab for detailed results"
+    - uses: actions/checkout@v3
+    
+    - name: Run Snyk Security Scan
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --json-file-output=snyk-results.json
+    
+    - name: Send Results to API
+      if: always()
+      run: |
+        SCAN_ID="scan-$(date +%s)"
+        COMMIT_SHA="${{ github.sha }}"
+        BRANCH="${{ github.ref_name }}"
+        AUTHOR="${{ github.actor }}"
+        
+        # Create JSON payload
+        cat > payload.json << EOL
+        {
+          "scanId": "$SCAN_ID",
+          "commitSha": "$COMMIT_SHA",
+          "branch": "$BRANCH",
+          "author": "$AUTHOR",
+          "vulnerabilities": []
+        }
+        EOL
+        
+        # Check if Snyk results exist
+        if [ -f snyk-results.json ]; then
+          # Parse Snyk results and format for API
+          python3 << PYTHON
+        import json
+        import sys
+        
+        try:
+            with open('snyk-results.json', 'r') as f:
+                snyk_data = json.load(f)
+            
+            with open('payload.json', 'r') as f:
+                payload = json.load(f)
+            
+            vulnerabilities = []
+            
+            if 'vulnerabilities' in snyk_data:
+                for vuln in snyk_data['vulnerabilities']:
+                    vulnerabilities.append({
+                        'source': 'snyk',
+                        'type': 'dependency',
+                        'severity': vuln.get('severity', 'medium'),
+                        'title': vuln.get('title', 'Unknown vulnerability'),
+                        'description': vuln.get('description', ''),
+                        'package': f"{vuln.get('packageName', 'unknown')}@{vuln.get('version', '')}",
+                        'fixAvailable': bool(vuln.get('isUpgradable') or vuln.get('isPatchable')),
+                        'cvss': float(vuln.get('cvssScore', 0))
+                    })
+            
+            payload['vulnerabilities'] = vulnerabilities
+            
+            with open('payload.json', 'w') as f:
+                json.dump(payload, f)
+                
+        except Exception as e:
+            print(f"Error processing Snyk results: {e}", file=sys.stderr)
+            sys.exit(0)
+        PYTHON
+        fi
+        
+        # Send to API
+        curl -X POST https://devsecops-security-api.onrender.com/api/scans \
+          -H "Content-Type: application/json" \
+          -d @payload.json || echo "Failed to send to API"
